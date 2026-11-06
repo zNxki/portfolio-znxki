@@ -1,3 +1,5 @@
+-- Esegui come superuser: sudo -u postgres psql -f deploy/db.sql
+-- Sostituisci le due password PRIMA di eseguire (es. openssl rand -hex 24).
 
 -- owner: esegue le migrazioni (usato solo all'avvio dal backend)
 CREATE ROLE portfolio_owner LOGIN PASSWORD 'CAMBIA_PASSWORD_OWNER';
