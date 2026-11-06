@@ -48,7 +48,7 @@ pub fn routes() -> Router<AppState> {
         .route("/uploads/{name}", get(upload))
         .route("/admin", get(admin_redirect))
         .route("/admin/", get(admin_index))
-        .route("/admin/{file}", get(admin_asset))
+        .route("/admin/{*file}", get(admin_asset))
 }
 
 pub fn mime_for(ext: &str) -> &'static str {
@@ -412,15 +412,36 @@ fn plain_file_name(name: &str) -> bool {
             .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-' || c == '_')
 }
 
-async fn admin_asset(State(st): State<AppState>, Path(file): Path<String>) -> AppResult<Response> {
-    if !plain_file_name(&file) {
-        return Err(AppError::NotFound);
-    }
-    let ext = extension_of(&file).ok_or(AppError::NotFound)?;
+async fn admin_asset(
+    State(st): State<AppState>,
+    Path(file): Path<String>,
+) -> AppResult<Response> {
+    let rel = safe_relative(&file).ok_or(AppError::NotFound)?;
+
+    let ext = extension_of(
+        rel.file_name()
+            .and_then(|name| name.to_str())
+            .ok_or(AppError::NotFound)?
+    ).ok_or(AppError::NotFound)?;
+
     if !ADMIN_EXTENSIONS.contains(&ext.as_str()) {
         return Err(AppError::NotFound);
     }
-    let body = read_or_404(&st.cfg.admin_dir.join(&file)).await?;
+
+    let root = tokio::fs::canonicalize(&st.cfg.admin_dir)
+        .await
+        .map_err(|_| AppError::NotFound)?;
+
+    let full = tokio::fs::canonicalize(root.join(rel))
+        .await
+        .map_err(|_| AppError::NotFound)?;
+
+    if !full.starts_with(&root) {
+        return Err(AppError::NotFound);
+    }
+
+    let body = read_or_404(&full).await?;
+
     Ok(file_response(mime_for(&ext), "no-cache", body))
 }
 
