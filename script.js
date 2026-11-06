@@ -328,7 +328,8 @@
 
   const fin = () => {
     const el = document.createElement("span");
-    const s = data.boot.user + "@" + data.name.full + ":~$ " + data.boot.command;
+    const s =
+      data.boot.user + "@" + data.name.full + ":~$ " + data.boot.command;
     let i = 0;
 
     el.className = "pr";
@@ -531,7 +532,10 @@
 
     if (!document.hidden) document.title = T0;
 
-    $('meta[name="description"]').setAttribute("content", t("meta.description"));
+    $('meta[name="description"]').setAttribute(
+      "content",
+      t("meta.description"),
+    );
   };
 
   const mq = matchMedia("(prefers-color-scheme: light)");
@@ -839,7 +843,9 @@
         .map((p, i) => {
           const o = get("projectItems." + p.id) || {};
 
-          return roman(i + 1) + " " + (p.name || o.t || "") + " (" + p.year + ")";
+          return (
+            roman(i + 1) + " " + (p.name || o.t || "") + " (" + p.year + ")"
+          );
         })
         .join("\n");
     },
@@ -1048,6 +1054,18 @@
         opts.indexOf(document.activeElement) + (e.key === "ArrowDown" ? 1 : -1);
 
       opts[(n + opts.length) % opts.length].focus();
+    });
+  });
+
+  $$('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const target = document.querySelector(link.getAttribute("href"));
+      if (!target) return;
+
+      e.preventDefault();
+      target.scrollIntoView({
+        behavior: reduce ? "auto" : "smooth",
+      });
     });
   });
 
