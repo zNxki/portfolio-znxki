@@ -1057,14 +1057,18 @@
     });
   });
 
-  $$('a[href^="#"]').forEach((link) => {
+  $$('a[href*="#"]').forEach((link) => {
     link.addEventListener("click", (e) => {
-      const target = document.querySelector(link.getAttribute("href"));
+      const href = link.getAttribute("href");
+      if (!href || !href.startsWith("#")) return;
+
+      const target = document.querySelector(href);
       if (!target) return;
 
       e.preventDefault();
       target.scrollIntoView({
         behavior: reduce ? "auto" : "smooth",
+        block: "start",
       });
     });
   });
