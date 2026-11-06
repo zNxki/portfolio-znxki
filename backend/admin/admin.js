@@ -1778,6 +1778,14 @@
       "Consenti l'indicizzazione dai motori di ricerca",
       s.robots_index,
     );
+    const gsc = h("input", {
+      type: "text",
+      maxlength: 100,
+      autocomplete: "off",
+      spellcheck: "false",
+      placeholder: "es. aBc123_token",
+    });
+    gsc.value = s.google_site_verification || "";
     const save = submitBar("Salva SEO", async () => {
       const body = {
         site_title: title.get(),
@@ -1788,6 +1796,7 @@
         og_image_media: ogId,
         theme_color: noColor.input.checked ? null : color.value,
         robots_index: robots.input.checked,
+        google_site_verification: gsc.value.trim() || null,
       };
       if (
         (await guard(() => api("PUT", "/api/admin/settings/seo", body))) !==
@@ -1808,6 +1817,11 @@
           h("div", { class: "inl" }, color, noColor.el),
         ),
         h("div", { class: "field" }, robots.el),
+        field(
+          "Verifica Google Search Console",
+          gsc,
+          "Solo il valore di content del meta google-site-verification.",
+        ),
       ),
       h(
         "div",

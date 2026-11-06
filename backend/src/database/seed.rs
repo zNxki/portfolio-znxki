@@ -356,6 +356,7 @@ pub async fn run(pool: &PgPool, cfg: &Config) -> AppResult<()> {
         og_image_media: None,
         theme_color: None,
         robots_index: true,
+        google_site_verification: None,
     };
     let seo = seo.validate()?;
 

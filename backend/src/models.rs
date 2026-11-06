@@ -776,6 +776,8 @@ pub struct SeoSettings {
     pub theme_color: Option<String>,
     #[serde(default = "default_true")]
     pub robots_index: bool,
+    #[serde(default)]
+    pub google_site_verification: Option<String>,
 }
 
 impl SeoSettings {
@@ -790,6 +792,22 @@ impl SeoSettings {
             Some(c) if !c.trim().is_empty() => Some(hex_color(&mut e, "theme_color", c)),
             _ => None,
         };
+        let google_site_verification = match &self.google_site_verification {
+            Some(v) if !v.trim().is_empty() => {
+                let t = v.trim().to_string();
+                let ok = t.len() <= 100
+                    && t.chars()
+                        .all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '_');
+                if !ok {
+                    e.push(
+                        "google_site_verification",
+                        "Token non valido (solo lettere, numeri, - e _)",
+                    );
+                }
+                Some(t)
+            }
+            _ => None,
+        };
         e.finish()?;
         Ok(SeoSettings {
             site_title,
@@ -800,6 +818,7 @@ impl SeoSettings {
             og_image_media: self.og_image_media,
             theme_color,
             robots_index: self.robots_index,
+            google_site_verification,
         })
     }
 }

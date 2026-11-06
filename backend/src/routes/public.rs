@@ -146,11 +146,28 @@ pub fn render_index(
             html_escape(color)
         ));
     }
+    if let Some(token) = &seo.google_site_verification {
+        block.push_str(&format!(
+            "<meta name=\"google-site-verification\" content=\"{}\">\n",
+            html_escape(token)
+        ));
+    }
     block.push_str(&format!(
         "<link rel=\"canonical\" href=\"{}/\">\n",
         html_escape(origin)
     ));
     block.push_str("<meta property=\"og:type\" content=\"website\">\n");
+    block.push_str(&format!(
+        "<meta property=\"og:site_name\" content=\"{}\">\n",
+        html_escape(&title)
+    ));
+    block.push_str(&format!(
+        "<meta property=\"og:locale\" content=\"{}\">\n",
+        match default_lang {
+            "en" => "en_US".to_string(),
+            l => format!("{}_{}", l, l.to_ascii_uppercase()),
+        }
+    ));
     block.push_str(&format!(
         "<meta property=\"og:title\" content=\"{}\">\n",
         html_escape(&og_title)
@@ -188,6 +205,21 @@ pub fn render_index(
         block.push_str(&format!(
             "<meta name=\"twitter:image\" content=\"{}\">\n",
             html_escape(&url)
+        ));
+    }
+
+    if seo.robots_index {
+        let ld = json!({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": title,
+            "url": format!("{origin}/"),
+            "description": description,
+            "inLanguage": default_lang,
+        });
+        block.push_str(&format!(
+            "<script type=\"application/ld+json\">{}</script>\n",
+            ld.to_string().replace('<', "\\u003c")
         ));
     }
 
@@ -506,6 +538,7 @@ mod tests {
             og_image_media: None,
             theme_color: Some("#0a0a0b".to_string()),
             robots_index: true,
+            google_site_verification: Some("abc_DEF-123".to_string()),
         }
     }
 
@@ -521,6 +554,10 @@ mod tests {
         assert!(out.contains("<script>let a=1;</script>"));
         assert_eq!(out.matches("name=\"description\"").count(), 1);
         assert!(out.contains("noindex") == false);
+        assert!(out.contains("name=\"google-site-verification\" content=\"abc_DEF-123\""));
+        assert!(out.contains("application/ld+json"));
+        assert!(out.contains("og:locale\" content=\"it_IT\""));
+        assert!(!out.contains("Titolo <x>"));
     }
 
     #[test]
@@ -529,6 +566,7 @@ mod tests {
         s.robots_index = false;
         let out = render_index(TEMPLATE, "https://x.test", "it", &s, None);
         assert!(out.contains("noindex,nofollow"));
+        assert!(!out.contains("application/ld+json"));
         assert!(out.contains("twitter:card\" content=\"summary\""));
     }
 
