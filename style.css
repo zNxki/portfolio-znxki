@@ -1231,3 +1231,23 @@ h1 em span {
         gap: 0.7rem;
     }
 }
+
+.hero {
+    position: relative;
+}
+
+#hx {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 90%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 52%, transparent 90%);
+}
+
+.hero .wrap {
+    position: relative;
+    z-index: 1;
+}

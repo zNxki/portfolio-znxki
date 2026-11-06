@@ -167,7 +167,10 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     seed::run(&pool, &cfg).await?;
     let demoted = crate::database::users::sync_admins(&pool, &cfg.admin_github_ids).await?;
     if demoted > 0 {
-        tracing::warn!(demoted, "utenti rimossi da ADMIN_GITHUB_IDS declassati a USER");
+        tracing::warn!(
+            demoted,
+            "utenti rimossi da ADMIN_GITHUB_IDS declassati a USER"
+        );
     }
 
     let bind = cfg.bind_addr;

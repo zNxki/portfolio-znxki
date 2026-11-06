@@ -1057,24 +1057,288 @@
     });
   });
 
-  $$('a[href*="#"]').forEach((link) => {
-    link.addEventListener("click", (e) => {
-      const href = link.getAttribute("href");
-      if (!href || !href.startsWith("#")) return;
-
-      const target = document.querySelector(href);
-      if (!target) return;
-
-      e.preventDefault();
-      target.scrollIntoView({
-        behavior: reduce ? "auto" : "smooth",
-        block: "start",
-      });
-    });
-  });
-
   document.addEventListener("click", shut);
 
   sync($("#dd-lang"), lang);
   sync($("#dd-theme"), thm);
+})();
+
+/* ───── URL pulito: i link interni scorrono alla sezione senza mostrare #sezione ───── */
+(() => {
+  const still = matchMedia("(prefers-reduced-motion: reduce)");
+  const clean = () => {
+    if (location.hash)
+      history.replaceState(null, "", location.pathname + location.search);
+  };
+
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    const id = a && a.getAttribute("href").slice(1);
+    const el = id && document.getElementById(id);
+
+    if (!el) return;
+
+    e.preventDefault();
+    el.scrollIntoView({
+      behavior: still.matches ? "auto" : "smooth",
+      block: "start",
+    });
+    clean();
+  });
+
+  clean();
+})();
+
+/* ───── Hero: campo di punti reattivo (cursore, click, movimento autonomo) ───── */
+(() => {
+  const hero = document.querySelector(".hero");
+
+  if (!hero) return;
+
+  const cv = document.createElement("canvas");
+  const ctx = cv.getContext("2d");
+
+  if (!ctx) return;
+
+  cv.id = "hx";
+  cv.setAttribute("aria-hidden", "true");
+  hero.prepend(cv);
+
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const SP = 38;
+  const R = 190;
+  const ptr = { cx: -1e4, cy: -1e4, x: -1e4, y: -1e4, seen: -1e9 };
+  const ripples = [];
+
+  let W = 0,
+    H = 0,
+    cols = 0,
+    rows = 0,
+    dots = [],
+    run = true,
+    raf = 0,
+    frame = 0;
+  let ink = "#ecece8",
+    accent = "#9fd3ff";
+
+  const colors = () => {
+    const s = getComputedStyle(document.documentElement);
+
+    ink = s.getPropertyValue("--ink").trim() || ink;
+    accent = s.getPropertyValue("--accent").trim() || accent;
+  };
+
+  const build = () => {
+    const r = hero.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    W = r.width;
+    H = hero.offsetHeight;
+    cv.width = Math.round(W * dpr);
+    cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    cols = Math.ceil(W / SP) + 1;
+    rows = Math.ceil(H / SP) + 1;
+
+    const ox = (W - (cols - 1) * SP) / 2;
+    const oy = (H - (rows - 1) * SP) / 2;
+
+    dots = [];
+
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const hx = ox + i * SP;
+        const hy = oy + j * SP;
+
+        dots.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0, f: 0 });
+      }
+    }
+  };
+
+  const step = (now) => {
+    const t = now / 1000;
+    const rect = hero.getBoundingClientRect();
+    const idle = now - ptr.seen > 2200;
+
+    let tx = ptr.cx - rect.left;
+    let ty = ptr.cy - rect.top;
+
+    if (idle) {
+      tx = W * (0.5 + 0.34 * Math.sin(t * 0.45));
+      ty = H * (0.36 + 0.2 * Math.sin(t * 0.33 + 1.2));
+    }
+
+    ptr.x += (tx - ptr.x) * (ptr.x < -5e3 ? 1 : 0.09);
+    ptr.y += (ty - ptr.y) * (ptr.y < -5e3 ? 1 : 0.09);
+
+    for (let k = ripples.length - 1; k >= 0; k--) {
+      if (t - ripples[k].t0 > 2.4) ripples.splice(k, 1);
+    }
+
+    for (const d of dots) {
+      let gx =
+        d.hx +
+        Math.sin(d.hy * 0.012 + t * 0.7) * 6 +
+        Math.cos(d.hx * 0.008 - t * 0.5) * 4;
+      let gy =
+        d.hy +
+        Math.cos(d.hx * 0.011 + t * 0.6) * 6 +
+        Math.sin(d.hy * 0.009 + t * 0.4) * 4;
+      const dx = d.hx - ptr.x;
+      const dy = d.hy - ptr.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      let f = 0;
+
+      if (dist < R) {
+        f = (1 - dist / R) ** 2;
+        gx += (dx / dist) * f * 54;
+        gy += (dy / dist) * f * 54;
+      }
+
+      for (const rp of ripples) {
+        const age = t - rp.t0;
+        const rx = d.hx - rp.x;
+        const ry = d.hy - rp.y;
+        const rd = Math.hypot(rx, ry) || 1;
+        const w =
+          Math.exp(-(((rd - age * 560) / 70) ** 2)) * Math.exp(-age * 1.5);
+
+        gx += (rx / rd) * w * 34;
+        gy += (ry / rd) * w * 34;
+        f = Math.max(f, w * 0.9);
+      }
+
+      d.vx = (d.vx + (gx - d.x) * 0.09) * 0.8;
+      d.vy = (d.vy + (gy - d.y) * 0.09) * 0.8;
+      d.x += d.vx;
+      d.y += d.vy;
+      d.f += (f - d.f) * 0.25;
+    }
+
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 1;
+
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const a = dots[j * cols + i];
+
+        if (a.f < 0.05) continue;
+
+        for (const [ni, nj] of [
+          [i + 1, j],
+          [i, j + 1],
+        ]) {
+          if (ni >= cols || nj >= rows) continue;
+
+          const b = dots[nj * cols + ni];
+          const s = Math.min(a.f, b.f);
+
+          if (s < 0.05) continue;
+
+          ctx.globalAlpha = Math.min(0.55, s * 0.75);
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (const d of dots) {
+      const r = 1.1 + d.f * 2.6;
+
+      ctx.globalAlpha = 0.2 + d.f * 0.2;
+      ctx.fillStyle = ink;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, r, 0, 6.2832);
+      ctx.fill();
+
+      if (d.f > 0.04) {
+        ctx.globalAlpha = Math.min(1, d.f * 1.1);
+        ctx.fillStyle = accent;
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, r, 0, 6.2832);
+        ctx.fill();
+      }
+    }
+
+    ctx.globalAlpha = 1;
+
+    if (++frame % 90 === 0) colors();
+  };
+
+  const loop = (now) => {
+    raf = 0;
+
+    if (!run || document.hidden) return;
+
+    step(now);
+    raf = requestAnimationFrame(loop);
+  };
+
+  const start = () => {
+    if (!raf && run && !still) raf = requestAnimationFrame(loop);
+  };
+
+  colors();
+  build();
+
+  if (still) {
+    ptr.x = W * 0.5;
+    ptr.y = H * 0.3;
+    step(performance.now());
+    window.addEventListener("resize", () => {
+      build();
+      step(performance.now());
+    });
+    return;
+  }
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      ptr.cx = e.clientX;
+      ptr.cy = e.clientY;
+      ptr.seen = performance.now();
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "pointerdown",
+    (e) => {
+      const r = hero.getBoundingClientRect();
+
+      if (e.clientY < r.top || e.clientY > r.bottom) return;
+
+      ripples.push({
+        x: e.clientX - r.left,
+        y: e.clientY - r.top,
+        t0: performance.now() / 1000,
+      });
+      if (ripples.length > 4) ripples.shift();
+    },
+    { passive: true },
+  );
+
+  let rt = 0;
+
+  window.addEventListener("resize", () => {
+    clearTimeout(rt);
+    rt = setTimeout(build, 150);
+  });
+
+  document.addEventListener("visibilitychange", start);
+
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver((en) => {
+      run = en[0].isIntersecting;
+      if (run) start();
+    }).observe(hero);
+  }
+
+  start();
 })();

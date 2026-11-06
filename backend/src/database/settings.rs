@@ -9,7 +9,10 @@ use uuid::Uuid;
 use crate::error::{AppError, AppResult};
 use crate::models::{GeneralSettings, SeoSettings};
 
-async fn get_json<T: DeserializeOwned + Send + Unpin + 'static>(pool: &PgPool, key: &str) -> AppResult<T> {
+async fn get_json<T: DeserializeOwned + Send + Unpin + 'static>(
+    pool: &PgPool,
+    key: &str,
+) -> AppResult<T> {
     let row: Option<Json<T>> = sqlx::query_scalar("SELECT value FROM site_settings WHERE key = $1")
         .bind(key)
         .fetch_optional(pool)

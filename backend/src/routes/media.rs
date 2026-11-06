@@ -49,7 +49,10 @@ pub fn sanitize_name(raw: &str) -> Option<String> {
     }
 }
 
-async fn list(State(st): State<AppState>, AdminUser(_): AdminUser) -> AppResult<Json<Vec<MediaOut>>> {
+async fn list(
+    State(st): State<AppState>,
+    AdminUser(_): AdminUser,
+) -> AppResult<Json<Vec<MediaOut>>> {
     let rows = media::list(&st.pool).await?;
     Ok(Json(rows.into_iter().map(MediaOut::from).collect()))
 }
@@ -63,17 +66,13 @@ async fn upload(
     let mut data: Option<Vec<u8>> = None;
     let mut original: Option<String> = None;
 
-    while let Some(field) = multipart
-        .next_field()
-        .await
-        .map_err(|e| {
-            if e.status() == StatusCode::PAYLOAD_TOO_LARGE {
-                AppError::PayloadTooLarge
-            } else {
-                AppError::bad_request("Upload non valido")
-            }
-        })?
-    {
+    while let Some(field) = multipart.next_field().await.map_err(|e| {
+        if e.status() == StatusCode::PAYLOAD_TOO_LARGE {
+            AppError::PayloadTooLarge
+        } else {
+            AppError::bad_request("Upload non valido")
+        }
+    })? {
         if field.name() != Some("file") {
             continue;
         }
@@ -174,14 +173,23 @@ mod tests {
             sniff(&[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0]),
             Some(("image/png", "png"))
         );
-        assert_eq!(sniff(&[0xFF, 0xD8, 0xFF, 0xE0]), Some(("image/jpeg", "jpg")));
+        assert_eq!(
+            sniff(&[0xFF, 0xD8, 0xFF, 0xE0]),
+            Some(("image/jpeg", "jpg"))
+        );
         assert_eq!(sniff(b"GIF89a...."), Some(("image/gif", "gif")));
-        assert_eq!(sniff(b"RIFF\x00\x00\x00\x00WEBPVP8 "), Some(("image/webp", "webp")));
+        assert_eq!(
+            sniff(b"RIFF\x00\x00\x00\x00WEBPVP8 "),
+            Some(("image/webp", "webp"))
+        );
     }
 
     #[test]
     fn rejects_active_content() {
-        assert_eq!(sniff(b"<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"), None);
+        assert_eq!(
+            sniff(b"<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"),
+            None
+        );
         assert_eq!(sniff(b"<html><script>alert(1)</script>"), None);
         assert_eq!(sniff(b"MZ\x90\x00"), None);
         assert_eq!(sniff(b""), None);
@@ -192,7 +200,10 @@ mod tests {
     fn names_are_sanitized() {
         assert_eq!(sanitize_name("../../etc/passwd").as_deref(), Some("passwd"));
         assert_eq!(sanitize_name("a<b>.png").as_deref(), Some("ab.png"));
-        assert_eq!(sanitize_name("C:\\x\\foto.jpg").as_deref(), Some("foto.jpg"));
+        assert_eq!(
+            sanitize_name("C:\\x\\foto.jpg").as_deref(),
+            Some("foto.jpg")
+        );
         assert_eq!(sanitize_name("   ").as_deref(), None);
         assert_eq!(sanitize_name(&"a".repeat(300)).map(|s| s.len()), Some(120));
     }

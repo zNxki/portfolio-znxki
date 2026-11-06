@@ -9,8 +9,6 @@ use crate::models::{Role, User};
 const COLS: &str =
     "id, github_id, login, display_name, avatar_url, role, created_at, last_login_at";
 
-/// Autorizza l'accesso solo agli ID GitHub presenti in `ADMIN_GITHUB_IDS`.
-/// Nessun altro account può ottenere una sessione, nemmeno se il database è vuoto.
 pub async fn login_allowed(
     pool: &PgPool,
     gh: &GithubUser,
@@ -36,8 +34,6 @@ pub async fn login_allowed(
     Ok(Some(row))
 }
 
-/// Allinea i ruoli all'allowlist: chi non è più elencato in `ADMIN_GITHUB_IDS`
-/// viene declassato a USER e le sue sessioni vengono revocate.
 pub async fn sync_admins(pool: &PgPool, allowed: &[i64]) -> AppResult<u64> {
     let mut tx = pool.begin().await?;
     let demoted: Vec<Uuid> = sqlx::query_scalar(
