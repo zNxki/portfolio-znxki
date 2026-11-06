@@ -1,0 +1,164 @@
+{
+    "locale": "en-GB",
+    "meta": {
+        "title": "zNxki_ — Portfolio",
+        "description": "zNxki_'s portfolio: web developer. Paper plugins, Fabric mods, Java and web. Projects, stack and contacts.",
+        "away": "come back _"
+    },
+    "aria": {
+        "console": "Open the console"
+    },
+    "boot": {
+        "h1": "{name} — tty1",
+        "h2": "bios {version} · 80x24",
+        "skip": "[ press any key to skip ]",
+        "lines": [
+            "{name} bootloader v{version} — build {build}",
+            "detecting hardware: cpu x{cpu} · ram {ram}MB",
+            "loading kernel {kernel}",
+            "mounting /portfolio (ext4, rw)",
+            "starting services: ui · motion · console",
+            "",
+            "fonts and styles ready",
+            "secure connection (tls 1.3)",
+            "auto login: {user}"
+        ]
+    },
+    "tag": "portfolio · available for collaborations",
+    "nav": {
+        "about": "about",
+        "work": "work",
+        "contacts": "contact"
+    },
+    "theme": {
+        "dark": "Dark",
+        "light": "Light",
+        "system": "System"
+    },
+    "hero": {
+        "label": "N° 001 — welcome",
+        "text": "Italian <b>web</b> developer. I build polished interfaces, clean systems and the details you only notice when they’re missing.",
+        "hintConsole": "press <kbd>/</kbd> to open the console",
+        "hintScroll": "scroll to continue ↓"
+    },
+    "sections": {
+        "contacts": {
+            "label": "N° 002 — contact",
+            "title": "Reach me on <em>any</em> of these."
+        },
+        "exp": {
+            "label": "N° 003 — skills",
+            "title": "Experience <em>with.</em>"
+        },
+        "about": {
+            "label": "N° 004 — colophon",
+            "title": "Who <em>I am.</em>"
+        },
+        "work": {
+            "label": "N° 005 — work",
+            "title": "Selected <em>work.</em>"
+        },
+        "stack": {
+            "label": "N° 006 — stack",
+            "title": "Stack."
+        }
+    },
+    "expItems": {
+        "js": {
+            "t": "JavaScript & TypeScript",
+            "s": "interfaces · async · modules"
+        },
+        "web": {
+            "t": "Modern HTML & CSS",
+            "s": "layout · animation · accessibility"
+        },
+        "db": {
+            "t": "Databases & APIs",
+            "s": "SQL · REST · caching"
+        },
+        "tools": {
+            "t": "Tooling",
+            "s": "Git · CI · web performance"
+        },
+        "java": {
+            "t": "Java",
+            "s": "OOP · concurrency · Gradle · Maven"
+        },
+        "paper": {
+            "t": "Minecraft plugins (Paper)",
+            "s": "Paper API · events · commands · configs"
+        },
+        "fabric": {
+            "t": "Minecraft mods (Fabric)",
+            "s": "Fabric API · mixins · client & server"
+        }
+    },
+    "about": {
+        "lead": "I’m an Italian developer focused on <em>clean systems</em> and carefully crafted interfaces.",
+        "p": [
+            "I also build Minecraft plugins (Paper) and mods (Fabric) in Java.",
+            "I’m currently working on a main project and carrying on small personal projects in my spare time.",
+            "I’m open to technically interesting collaborations: write to me."
+        ]
+    },
+    "projectItems": {
+        "one": {
+            "t": "NovarisRP - Tech Manager",
+            "s": "platform · ongoing"
+        },
+        "plugin": {
+            "t": "Plugin name",
+            "s": "Paper plugin · Java · Minecraft server"
+        },
+        "mod": {
+            "t": "TabScroller",
+            "s": "Fabric mod · Java · client"
+        },
+        "site": {
+            "t": "This site",
+            "s": "personal · design & development"
+        },
+        "more": {
+            "t": "— more on request",
+            "s": "write to me to see them"
+        }
+    },
+    "stackUi": {
+        "pick": "pick a technology",
+        "hint": "click a chip to see level and notes."
+    },
+    "levels": {
+        "advanced": "advanced",
+        "solid": "solid",
+        "growing": "growing"
+    },
+    "skills": {
+        "JavaScript": "interfaces, async and modules every day",
+        "TypeScript": "strong typing on mid-to-large projects",
+        "HTML": "semantics and accessibility first",
+        "CSS": "layouts, animation and design systems",
+        "React": "components, state and performance",
+        "Node.js": "APIs, scripts and tooling",
+        "Python": "automation and quick scripts",
+        "SQL": "queries, indexes and modeling",
+        "Git": "branching, rebasing and team workflows",
+        "Java": "my language for plugins and mods",
+        "Paper API": "events, commands, schedulers and config",
+        "Fabric": "mixins, registries and Fabric API",
+        "Gradle": "builds, dependencies and publishing",
+        "Maven": "classic projects and repositories"
+    },
+    "footer": " {name} — made with care, not in a hurry",
+    "console": {
+        "intro": "type <i>help</i> for commands.",
+        "help": "commands: <i>about</i>, <i>skills</i>, <i>work</i>, <i>contact</i>, <i>goto &lt;section&gt;</i>, <i>theme</i>, <i>matrix</i>, <i>whoami</i>, <i>clear</i>, <i>exit</i>",
+        "about": "Italian web developer: clean systems and polished interfaces. Paper plugins and Fabric mods in Java.",
+        "contact": "email: <i>{email}</i>",
+        "goingTo": "going to",
+        "unknownSection": "unknown section. try: contacts, about, work, stack, skills",
+        "theme": "theme",
+        "whoami": "{user}@{name} — access granted.",
+        "matrixReduced": "reduced motion is on: effect disabled.",
+        "notFound": "command not found: <b>{c}</b>. type <i>help</i>."
+    }
+}

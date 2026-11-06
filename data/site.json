@@ -1,0 +1,200 @@
+{
+    "defaultLang": "en",
+    "languages": [
+        "en",
+        "it"
+    ],
+    "name": {
+        "full": "zNxki_",
+        "parts": [
+            "z",
+            "Nxk",
+            "i_"
+        ]
+    },
+    "boot": {
+        "version": "2.6",
+        "build": "2026.11",
+        "kernel": "6.1.0-znxki",
+        "cpu": 8,
+        "ram": 16384,
+        "user": "guest",
+        "command": "startx --portfolio",
+        "kinds": [
+            "i",
+            "o",
+            "o",
+            "o",
+            "o",
+            "l",
+            "o",
+            "o",
+            "i"
+        ]
+    },
+    "contacts": [
+        {
+            "icon": "email",
+            "label": "Email",
+            "value": "znxx.kii@gmail.com",
+            "href": "mailto:znxx.kii@gmail.com"
+        },
+        {
+            "icon": "telegram",
+            "label": "Telegram",
+            "value": "@Fascijsta",
+            "href": "https://t.me/Fascijsta"
+        },
+        {
+            "icon": "github",
+            "label": "GitHub",
+            "value": "@zNxki",
+            "href": "https://github.com/zNxki"
+        },
+        {
+            "icon": "discord",
+            "label": "Discord",
+            "value": "znxkii",
+            "href": "https://discord.znxki.it"
+        }
+    ],
+    "experience": [
+        "js",
+        "web",
+        "db",
+        "tools",
+        "java",
+        "paper",
+        "fabric"
+    ],
+    "projects": [
+        {
+            "id": "novaris",
+            "name": "NovarisRP - Tech Manager",
+            "year": "10/2026 -",
+            "hue": 205
+        },
+        {
+            "id": "mod",
+            "name": "TabScroller",
+            "year": "12/2025 -",
+            "hue": 150
+        },
+        {
+            "id": "site",
+            "name": "znxki.it",
+            "year": "11/2026",
+            "hue": 270
+        }
+    ],
+    "marquee": [
+        "JavaScript",
+        "TypeScript",
+        "HTML",
+        "CSS",
+        "React",
+        "Node.js",
+        "Python",
+        "SQL",
+        "Git",
+        "Java",
+        "Paper",
+        "Fabric"
+    ],
+    "skills": [
+        {
+            "name": "JavaScript",
+            "level": 88
+        },
+        {
+            "name": "TypeScript",
+            "level": 78
+        },
+        {
+            "name": "HTML",
+            "level": 92
+        },
+        {
+            "name": "CSS",
+            "level": 90
+        },
+        {
+            "name": "React",
+            "level": 75
+        },
+        {
+            "name": "Node.js",
+            "level": 80
+        },
+        {
+            "name": "Python",
+            "level": 65
+        },
+        {
+            "name": "SQL",
+            "level": 76
+        },
+        {
+            "name": "Git",
+            "level": 85
+        },
+        {
+            "name": "Java",
+            "level": 90
+        },
+        {
+            "name": "Paper API",
+            "level": 88
+        },
+        {
+            "name": "Fabric",
+            "level": 78
+        },
+        {
+            "name": "Gradle",
+            "level": 74
+        },
+        {
+            "name": "Maven",
+            "level": 70
+        }
+    ],
+    "levels": [
+        {
+            "min": 85,
+            "key": "advanced"
+        },
+        {
+            "min": 72,
+            "key": "solid"
+        },
+        {
+            "min": 0,
+            "key": "growing"
+        }
+    ],
+    "accents": {
+        "dark": [
+            "#9fd3ff",
+            "#b6ff9f",
+            "#ff9fd3",
+            "#ffd39f"
+        ],
+        "light": [
+            "#0b6bcb",
+            "#1a8a3a",
+            "#c2185b",
+            "#b45f06"
+        ]
+    },
+    "sections": {
+        "contacts": "#contacts",
+        "contatti": "#contacts",
+        "about": "#about",
+        "work": "#work",
+        "lavori": "#work",
+        "projects": "#work",
+        "stack": "#stack",
+        "skills": "#exp"
+    }
+}

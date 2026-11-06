@@ -1,0 +1,32 @@
+[Unit]
+Description=Portfolio (backend Rust + sito)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=portfolio
+Group=portfolio
+WorkingDirectory=/opt/portfolio/backend
+EnvironmentFile=/etc/portfolio/portfolio.env
+ExecStart=/opt/portfolio/backend/target/release/portfolio-backend
+Restart=on-failure
+RestartSec=3
+
+# Hardening
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictNamespaces=true
+LockPersonality=true
+SystemCallArchitectures=native
+ReadWritePaths=/opt/portfolio/backend/uploads
+
+[Install]
+WantedBy=multi-user.target

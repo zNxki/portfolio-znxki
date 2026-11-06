@@ -1,0 +1,160 @@
+{
+    "locale": "it-IT",
+    "meta": {
+        "title": "zNxki_ — Portfolio",
+        "description": "Portfolio di zNxki_: sviluppatore web. Plugin Paper, mod Fabric, Java e web. Progetti, stack e contatti.",
+        "away": "torna qui _"
+    },
+    "aria": {
+        "console": "Apri la console"
+    },
+    "boot": {
+        "h1": "{name} — tty1",
+        "h2": "bios {version} · 80x24",
+        "skip": "[ premi un tasto per saltare ]",
+        "lines": [
+            "{name} bootloader v{version} — build {build}",
+            "rilevo hardware: cpu x{cpu} · ram {ram}MB",
+            "carico il kernel {kernel}",
+            "monto /portfolio (ext4, rw)",
+            "avvio servizi: ui · motion · console",
+            "",
+            "font e stili pronti",
+            "connessione sicura (tls 1.3)",
+            "login automatico: {user}"
+        ]
+    },
+    "tag": "portfolio · disponibile per collaborazioni",
+    "nav": {
+        "about": "about",
+        "work": "lavori",
+        "contacts": "contatti"
+    },
+    "theme": {
+        "dark": "Scuro",
+        "light": "Chiaro",
+        "system": "Sistema"
+    },
+    "hero": {
+        "label": "N° 001 — benvenuto",
+        "text": "Sviluppatore <b>web</b> italiano. Mi occupo di interfacce curate, sistemi puliti e dettagli che si notano solo quando mancano.",
+        "hintConsole": "premi <kbd>/</kbd> per aprire la console",
+        "hintScroll": "scorri per continuare ↓"
+    },
+    "sections": {
+        "contacts": {
+            "label": "N° 002 — contatti",
+            "title": "Scrivimi su <em>uno</em> di questi."
+        },
+        "exp": {
+            "label": "N° 003 — competenze",
+            "title": "Esperienza <em>con.</em>"
+        },
+        "about": {
+            "label": "N° 004 — colophon",
+            "title": "Chi <em>sono.</em>"
+        },
+        "work": {
+            "label": "N° 005 — lavori",
+            "title": "Lavori <em>scelti.</em>"
+        },
+        "stack": {
+            "label": "N° 006 — stack",
+            "title": "Stack."
+        }
+    },
+    "expItems": {
+        "js": {
+            "t": "JavaScript e TypeScript",
+            "s": "interfacce · async · moduli"
+        },
+        "web": {
+            "t": "HTML e CSS moderni",
+            "s": "layout · animazioni · accessibilità"
+        },
+        "db": {
+            "t": "Database e API",
+            "s": "SQL · REST · caching"
+        },
+        "tools": {
+            "t": "Strumenti di lavoro",
+            "s": "Git · CI · prestazioni web"
+        },
+        "java": {
+            "t": "Java",
+            "s": "OOP · concorrenza · Gradle · Maven"
+        },
+        "paper": {
+            "t": "Plugin Minecraft (Paper)",
+            "s": "Paper API · eventi · comandi · configurazioni"
+        },
+        "fabric": {
+            "t": "Mod Minecraft (Fabric)",
+            "s": "Fabric API · mixin · client e server"
+        }
+    },
+    "about": {
+        "lead": "Sono uno sviluppatore italiano concentrato su <em>sistemi puliti</em> e interfacce pensate con cura.",
+        "p": [
+            "Sviluppo anche plugin (Paper) e mod (Fabric) per Minecraft in Java.",
+            "Al momento lavoro a un progetto principale e porto avanti piccoli progetti personali nel tempo libero.",
+            "Sono aperto a collaborazioni tecnicamente interessanti: scrivimi."
+        ]
+    },
+    "projectItems": {
+        "one": {
+            "t": "NovarisRP - Tech Manager",
+            "s": "piattaforma · in corso"
+        },
+        "mod": {
+            "t": "TabScroller",
+            "s": "mod Fabric · Java · client"
+        },
+        "site": {
+            "t": "Questo sito",
+            "s": "personale · design e sviluppo"
+        },
+        "more": {
+            "t": "— altri su richiesta",
+            "s": "scrivimi per vederli"
+        }
+    },
+    "stackUi": {
+        "pick": "scegli una tecnologia",
+        "hint": "clicca un chip per vedere livello e note."
+    },
+    "levels": {
+        "advanced": "avanzato",
+        "solid": "solido",
+        "growing": "in crescita"
+    },
+    "skills": {
+        "JavaScript": "interfacce, async e moduli ogni giorno",
+        "TypeScript": "tipi forti su progetti medio-grandi",
+        "HTML": "semantica e accessibilità prima di tutto",
+        "CSS": "layout, animazioni e design system",
+        "React": "componenti, stato e prestazioni",
+        "Node.js": "API, script e strumenti",
+        "Python": "automazione e script rapidi",
+        "SQL": "query, indici e modellazione",
+        "Git": "branch, rebase e flussi di team",
+        "Java": "il mio linguaggio per plugin e mod",
+        "Paper API": "eventi, comandi, scheduler e config",
+        "Fabric": "mixin, registri e Fabric API",
+        "Gradle": "build, dipendenze e pubblicazione",
+        "Maven": "progetti e repository classici"
+    },
+    "footer": " {name} — fatto con cura, non con fretta",
+    "console": {
+        "intro": "scrivi <i>help</i> per i comandi.",
+        "help": "comandi: <i>about</i>, <i>skills</i>, <i>work</i>, <i>contact</i>, <i>goto &lt;sezione&gt;</i>, <i>theme</i>, <i>matrix</i>, <i>whoami</i>, <i>clear</i>, <i>exit</i>",
+        "about": "Sviluppatore web italiano: sistemi puliti e interfacce curate. Plugin Paper e mod Fabric in Java.",
+        "contact": "email: <i>{email}</i>",
+        "goingTo": "vado a",
+        "unknownSection": "sezione sconosciuta. prova: contacts, about, work, stack, skills",
+        "theme": "tema",
+        "whoami": "{user}@{name} — accesso consentito.",
+        "matrixReduced": "movimento ridotto attivo: effetto disattivato.",
+        "notFound": "comando non trovato: <b>{c}</b>. scrivi <i>help</i>."
+    }
+}
