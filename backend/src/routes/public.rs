@@ -396,11 +396,7 @@ async fn admin_redirect() -> Redirect {
 
 async fn admin_index(State(st): State<AppState>) -> AppResult<Response> {
     let body = read_or_404(&st.cfg.admin_dir.join("index.html")).await?;
-    Ok(file_response(
-        "text/html; charset=utf-8",
-        "no-cache",
-        body,
-    ))
+    Ok(file_response("text/html; charset=utf-8", "no-cache", body))
 }
 
 fn plain_file_name(name: &str) -> bool {
@@ -412,17 +408,15 @@ fn plain_file_name(name: &str) -> bool {
             .all(|c| c.is_ascii_alphanumeric() || c == '.' || c == '-' || c == '_')
 }
 
-async fn admin_asset(
-    State(st): State<AppState>,
-    Path(file): Path<String>,
-) -> AppResult<Response> {
+async fn admin_asset(State(st): State<AppState>, Path(file): Path<String>) -> AppResult<Response> {
     let rel = safe_relative(&file).ok_or(AppError::NotFound)?;
 
     let ext = extension_of(
         rel.file_name()
             .and_then(|name| name.to_str())
-            .ok_or(AppError::NotFound)?
-    ).ok_or(AppError::NotFound)?;
+            .ok_or(AppError::NotFound)?,
+    )
+    .ok_or(AppError::NotFound)?;
 
     if !ADMIN_EXTENSIONS.contains(&ext.as_str()) {
         return Err(AppError::NotFound);
@@ -574,7 +568,12 @@ mod tests {
     #[test]
     fn etag_matching() {
         let mut h = HeaderMap::new();
-        h.insert(header::IF_NONE_MATCH, "W/\"abc\", \"def\"".parse().unwrap_or_else(|_| header::HeaderValue::from_static("")));
+        h.insert(
+            header::IF_NONE_MATCH,
+            "W/\"abc\", \"def\""
+                .parse()
+                .unwrap_or_else(|_| header::HeaderValue::from_static("")),
+        );
         assert!(etag_matches(&h, "\"abc\""));
         assert!(etag_matches(&h, "\"def\""));
         assert!(!etag_matches(&h, "\"zzz\""));

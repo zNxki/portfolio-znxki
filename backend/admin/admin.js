@@ -1,6 +1,5 @@
 "use strict";
 (() => {
-    /* ───────── utilità DOM (nessun innerHTML: tutto passa da textContent) ───────── */
     const $ = (s, r = document) => r.querySelector(s);
 
     const h = (tag, props, ...kids) => {
@@ -33,7 +32,6 @@
         return Number.isNaN(d.getTime()) ? "—" : d.toLocaleString("it-IT");
     };
 
-    /* ───────── stato e API ───────── */
     const state = { me: null, csrf: "", general: null, techs: null };
 
     class ApiError extends Error {
@@ -81,7 +79,6 @@
         return data;
     };
 
-    /* ───────── feedback ───────── */
     const toast = (msg, kind) => {
         const t = h("div", { class: "toast " + (kind || ""), role: "status", text: msg });
         $("#toasts").append(t);
@@ -127,7 +124,6 @@
         return r === "yes";
     };
 
-    /* ───────── componenti form ───────── */
     const field = (label, control, hint) =>
         h("div", { class: "field" }, h("label", { text: label }), control, hint ? h("small", { class: "hint", text: hint }) : null);
 
@@ -214,7 +210,6 @@
         return b;
     };
 
-    /* ───────── libreria media ───────── */
     const loadMedia = () => api("GET", "/api/admin/media");
 
     const uploadMedia = async (file) => {
@@ -266,7 +261,6 @@
         return r === "ok" ? chosen : null;
     };
 
-    /* ───────── login e shell ───────── */
     const app = () => $("#app");
 
     const logout = async () => {
@@ -356,7 +350,6 @@
 
     const refresh = () => route();
 
-    /* ───────── dashboard ───────── */
     views.dashboard = async (root) => {
         const d = await api("GET", "/api/admin/dashboard");
         const labels = [
@@ -384,7 +377,6 @@
                         : h("div", { class: "empty", text: "Nessuna modifica registrata." }))));
     };
 
-    /* ───────── collezioni ordinabili ───────── */
     const collEdit = async (root, cfg, arg) => {
         let row = null;
         if (arg !== "new") {
@@ -457,7 +449,6 @@
         return { input: i, el: field(label, i) };
     };
 
-    /* contatti */
     const contactForm = (row) => {
         const r = row || { icon: "github", label: "", value: "", href: "", visible: true };
         const icon = select([["email", "Email"], ["telegram", "Telegram"], ["github", "GitHub"], ["discord", "Discord"]], r.icon);
@@ -482,7 +473,6 @@
         };
     };
 
-    /* tecnologie */
     const techForm = (row) => {
         const r = row || { name: "", marquee_label: "", icon: "", level: 70, description: {}, in_marquee: true, visible: true };
         const name = text(r.name, { maxlength: 40 });
@@ -507,7 +497,6 @@
         };
     };
 
-    /* esperienze */
     const expForm = (row) => {
         const r = row || { slug: "", kind: "work", title: {}, subtitle: {}, role: {}, organization: "", description: {}, start_date: null, end_date: null, visible: true };
         const slug = text(r.slug, { maxlength: 49 });
@@ -533,7 +522,6 @@
         };
     };
 
-    /* progetti */
     const gallery = (images) => {
         const items = (images || []).map((i) => ({ media_id: i.media_id, url: i.url, alt: i18n("Testo alternativo", i.alt, { max: 200 }) }));
         const box = h("div", { class: "gal" });
@@ -657,7 +645,6 @@
         }),
     });
 
-    /* ───────── informazioni personali ───────── */
     views.profile = async (root) => {
         const p = await api("GET", "/api/admin/profile");
         const langs = activeLangs();
@@ -719,7 +706,6 @@
             h("div", { class: "inl" }, save));
     };
 
-    /* ───────── media ───────── */
     views.media = async (root) => {
         const items = await api("GET", "/api/admin/media");
         const del = async (m) => {
@@ -740,7 +726,6 @@
                 : h("div", { class: "card empty", text: "Nessuna immagine caricata." }));
     };
 
-    /* ───────── impostazioni ───────── */
     const rowsEditor = (label, items, cols, hint) => {
         const box = h("div");
         const rows = [];
@@ -918,7 +903,6 @@
         await cur[2](body);
     };
 
-    /* ───────── sicurezza e audit ───────── */
     views.security = async (root) => {
         const [users, sessions, mine] = await Promise.all([
             api("GET", "/api/admin/users"), api("GET", "/api/admin/sessions"), api("GET", "/api/me/sessions"),
@@ -997,7 +981,6 @@
         await load();
     };
 
-    /* ───────── avvio ───────── */
     const boot = async () => {
         clear(app()).append(h("div", { class: "spin", text: "Caricamento…" }));
         let me;
