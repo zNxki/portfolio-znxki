@@ -1063,7 +1063,6 @@
   sync($("#dd-theme"), thm);
 })();
 
-/* ───── URL pulito: i link interni scorrono alla sezione senza mostrare #sezione ───── */
 (() => {
   const still = matchMedia("(prefers-reduced-motion: reduce)");
   const clean = () => {
@@ -1089,7 +1088,6 @@
   clean();
 })();
 
-/* ───── Hero: campo di punti reattivo (cursore, click, movimento autonomo) ───── */
 (() => {
   const hero = document.querySelector(".hero");
 
@@ -1105,27 +1103,53 @@
   hero.prepend(cv);
 
   const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const SP = 38;
-  const R = 190;
+  const SP = 34;
+  const R = 210;
+  const LINK = 135;
+  const CUR = 200;
   const ptr = { cx: -1e4, cy: -1e4, x: -1e4, y: -1e4, seen: -1e9 };
   const ripples = [];
+  const stars = [];
 
   let W = 0,
     H = 0,
     cols = 0,
     rows = 0,
     dots = [],
+    parts = [],
     run = true,
     raf = 0,
-    frame = 0;
-  let ink = "#ecece8",
-    accent = "#9fd3ff";
+    frame = 0,
+    nextStar = 1.2,
+    light = false;
+  let ac = [159, 211, 255],
+    ik = [236, 236, 232],
+    vi = [183, 140, 255];
+
+  const rgb = (h) => {
+    const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((h || "").trim());
+
+    if (!m) return null;
+
+    let x = m[1];
+
+    if (x.length === 3) x = x.replace(/./g, "$&$&");
+
+    const n = parseInt(x, 16);
+
+    return [n >> 16, (n >> 8) & 255, n & 255];
+  };
+
+  const c = (a, al) =>
+    "rgba(" + a[0] + "," + a[1] + "," + a[2] + "," + al + ")";
 
   const colors = () => {
     const s = getComputedStyle(document.documentElement);
 
-    ink = s.getPropertyValue("--ink").trim() || ink;
-    accent = s.getPropertyValue("--accent").trim() || accent;
+    light = document.documentElement.dataset.mode === "light";
+    ik = rgb(s.getPropertyValue("--ink")) || ik;
+    ac = rgb(s.getPropertyValue("--accent")) || ac;
+    vi = light ? [122, 77, 216] : [183, 140, 255];
   };
 
   const build = () => {
@@ -1154,6 +1178,59 @@
         dots.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0, f: 0 });
       }
     }
+
+    const n = Math.max(36, Math.min(110, Math.round((W * H) / 16000)));
+
+    parts = [];
+
+    for (let k = 0; k < n; k++) {
+      const a = Math.random() * 6.2832;
+      const s = 0.12 + Math.random() * 0.3;
+      const bx = Math.cos(a) * s;
+      const by = Math.sin(a) * s;
+
+      parts.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        bx,
+        by,
+        vx: bx,
+        vy: by,
+        r: 1 + Math.random() * 1.6,
+        k: Math.random() < 0.28,
+        p: Math.random() * 6.2832,
+      });
+    }
+  };
+
+  const burst = (x, y, power, reach) => {
+    for (const p of parts) {
+      const dx = p.x - x;
+      const dy = p.y - y;
+      const d = Math.hypot(dx, dy) || 1;
+      const f = Math.max(0, 1 - d / reach);
+
+      p.vx += (dx / d) * f * power;
+      p.vy += (dy / d) * f * power;
+    }
+  };
+
+  const intro = () => {
+    cv.classList.add("on");
+
+    const x = Math.min(W * 0.12, 160);
+    const y = H * 0.82;
+    const now = () => performance.now() / 1000;
+
+    ripples.push({ x, y, t0: now() });
+    burst(x, y, 9, Math.max(W, H));
+
+    [260, 560].forEach((d) => {
+      setTimeout(() => {
+        ripples.push({ x, y, t0: now() });
+        if (ripples.length > 5) ripples.shift();
+      }, d);
+    });
   };
 
   const step = (now) => {
@@ -1165,15 +1242,39 @@
     let ty = ptr.cy - rect.top;
 
     if (idle) {
-      tx = W * (0.5 + 0.34 * Math.sin(t * 0.45));
-      ty = H * (0.36 + 0.2 * Math.sin(t * 0.33 + 1.2));
+      tx = W * (0.5 + 0.36 * Math.sin(t * 0.45));
+      ty = H * (0.42 + 0.26 * Math.sin(t * 0.33 + 1.2));
     }
 
-    ptr.x += (tx - ptr.x) * (ptr.x < -5e3 ? 1 : 0.09);
-    ptr.y += (ty - ptr.y) * (ptr.y < -5e3 ? 1 : 0.09);
+    ptr.x += (tx - ptr.x) * (ptr.x < -5e3 ? 1 : 0.08);
+    ptr.y += (ty - ptr.y) * (ptr.y < -5e3 ? 1 : 0.08);
 
     for (let k = ripples.length - 1; k >= 0; k--) {
-      if (t - ripples[k].t0 > 2.4) ripples.splice(k, 1);
+      if (t - ripples[k].t0 > 2.6) ripples.splice(k, 1);
+    }
+
+    for (const p of parts) {
+      const dx = p.x - ptr.x;
+      const dy = p.y - ptr.y;
+      const d = Math.hypot(dx, dy) || 1;
+
+      if (d < 260) {
+        const f = d < 90 ? (1 - d / 90) * 0.25 : -(1 - d / 260) * 0.02;
+
+        p.vx += (dx / d) * f;
+        p.vy += (dy / d) * f;
+      }
+
+      p.vx += (p.bx - p.vx) * 0.015;
+      p.vy += (p.by - p.vy) * 0.015;
+      p.x += p.vx;
+      p.y += p.vy;
+
+      if (p.x < -10) p.x = W + 10;
+      else if (p.x > W + 10) p.x = -10;
+
+      if (p.y < -10) p.y = H + 10;
+      else if (p.y > H + 10) p.y = -10;
     }
 
     for (const d of dots) {
@@ -1192,8 +1293,8 @@
 
       if (dist < R) {
         f = (1 - dist / R) ** 2;
-        gx += (dx / dist) * f * 54;
-        gy += (dy / dist) * f * 54;
+        gx += (dx / dist) * f * 56;
+        gy += (dy / dist) * f * 56;
       }
 
       for (const rp of ripples) {
@@ -1202,11 +1303,11 @@
         const ry = d.hy - rp.y;
         const rd = Math.hypot(rx, ry) || 1;
         const w =
-          Math.exp(-(((rd - age * 560) / 70) ** 2)) * Math.exp(-age * 1.5);
+          Math.exp(-(((rd - age * 620) / 80) ** 2)) * Math.exp(-age * 1.3);
 
-        gx += (rx / rd) * w * 34;
-        gy += (ry / rd) * w * 34;
-        f = Math.max(f, w * 0.9);
+        gx += (rx / rd) * w * 38;
+        gy += (ry / rd) * w * 38;
+        f = Math.max(f, w * 0.95);
       }
 
       d.vx = (d.vx + (gx - d.x) * 0.09) * 0.8;
@@ -1216,10 +1317,40 @@
       d.f += (f - d.f) * 0.25;
     }
 
+    if (t > nextStar && stars.length < 3) {
+      const fromTop = Math.random() < 0.7;
+
+      stars.push({
+        x: fromTop ? Math.random() * W * 0.8 : -20,
+        y: fromTop ? -20 : Math.random() * H * 0.4,
+        vx: 9 + Math.random() * 6,
+        vy: 4 + Math.random() * 3,
+      });
+      nextStar = t + 2.2 + Math.random() * 3.5;
+    }
+
     ctx.clearRect(0, 0, W, H);
 
-    ctx.strokeStyle = accent;
+    const g = ctx.createRadialGradient(ptr.x, ptr.y, 0, ptr.x, ptr.y, 280);
+
+    g.addColorStop(0, c(ac, light ? 0.16 : 0.24));
+    g.addColorStop(1, c(ac, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+
+    const bx = Math.min(W * 0.18, 220);
+    const by = H * 0.8;
+    const br = Math.max(W, H) * 0.45;
+    const g2 = ctx.createRadialGradient(bx, by, 0, bx, by, br);
+    const pulse = 0.1 + 0.05 * Math.sin(t * 0.8);
+
+    g2.addColorStop(0, c(vi, light ? pulse * 1.1 : pulse));
+    g2.addColorStop(1, c(vi, 0));
+    ctx.fillStyle = g2;
+    ctx.fillRect(0, 0, W, H);
+
     ctx.lineWidth = 1;
+    ctx.strokeStyle = c(ac, 1);
 
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < cols; i++) {
@@ -1238,7 +1369,7 @@
 
           if (s < 0.05) continue;
 
-          ctx.globalAlpha = Math.min(0.55, s * 0.75);
+          ctx.globalAlpha = Math.min(0.6, s * 0.8);
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
           ctx.lineTo(b.x, b.y);
@@ -1247,18 +1378,21 @@
       }
     }
 
-    for (const d of dots) {
-      const r = 1.1 + d.f * 2.6;
+    const inkS = c(ik, 1);
+    const acS = c(ac, 1);
 
-      ctx.globalAlpha = 0.2 + d.f * 0.2;
-      ctx.fillStyle = ink;
+    for (const d of dots) {
+      const r = 1.2 + d.f * 2.8;
+
+      ctx.globalAlpha = 0.3 + d.f * 0.2;
+      ctx.fillStyle = inkS;
       ctx.beginPath();
       ctx.arc(d.x, d.y, r, 0, 6.2832);
       ctx.fill();
 
       if (d.f > 0.04) {
         ctx.globalAlpha = Math.min(1, d.f * 1.1);
-        ctx.fillStyle = accent;
+        ctx.fillStyle = acS;
         ctx.beginPath();
         ctx.arc(d.x, d.y, r, 0, 6.2832);
         ctx.fill();
@@ -1266,6 +1400,88 @@
     }
 
     ctx.globalAlpha = 1;
+    ctx.lineWidth = 1;
+
+    for (let i = 0; i < parts.length; i++) {
+      const a = parts[i];
+
+      for (let j = i + 1; j < parts.length; j++) {
+        const b = parts[j];
+        const dx = a.x - b.x;
+        const dy = a.y - b.y;
+        const d2 = dx * dx + dy * dy;
+
+        if (d2 > LINK * LINK) continue;
+
+        ctx.strokeStyle = c(
+          a.k || b.k ? vi : ac,
+          (1 - Math.sqrt(d2) / LINK) * 0.45,
+        );
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      }
+
+      const cx = a.x - ptr.x;
+      const cy = a.y - ptr.y;
+      const cd = Math.hypot(cx, cy);
+
+      if (cd < CUR) {
+        ctx.strokeStyle = c(ac, (1 - cd / CUR) * 0.75);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(ptr.x, ptr.y);
+        ctx.stroke();
+      }
+    }
+
+    for (const p of parts) {
+      const near = Math.max(0, 1 - Math.hypot(p.x - ptr.x, p.y - ptr.y) / CUR);
+
+      ctx.globalAlpha = Math.min(
+        1,
+        0.55 + 0.25 * Math.sin(t * 2 + p.p) + near * 0.4,
+      );
+      ctx.fillStyle = p.k ? c(vi, 1) : near > 0.05 ? acS : inkS;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r * (1 + near * 1.2), 0, 6.2832);
+      ctx.fill();
+    }
+
+    ctx.globalAlpha = 1;
+
+    for (let k = stars.length - 1; k >= 0; k--) {
+      const s = stars[k];
+
+      s.x += s.vx;
+      s.y += s.vy;
+
+      if (s.x > W + 160 || s.y > H + 160) {
+        stars.splice(k, 1);
+        continue;
+      }
+
+      const sg = ctx.createLinearGradient(
+        s.x - s.vx * 16,
+        s.y - s.vy * 16,
+        s.x,
+        s.y,
+      );
+
+      sg.addColorStop(0, c(ac, 0));
+      sg.addColorStop(1, c(light ? ac : [255, 255, 255], 0.95));
+      ctx.strokeStyle = sg;
+      ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      ctx.moveTo(s.x - s.vx * 16, s.y - s.vy * 16);
+      ctx.lineTo(s.x, s.y);
+      ctx.stroke();
+      ctx.fillStyle = c(light ? ac : [255, 255, 255], 1);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, 1.8, 0, 6.2832);
+      ctx.fill();
+    }
 
     if (++frame % 90 === 0) colors();
   };
@@ -1286,15 +1502,32 @@
   colors();
   build();
 
+  const ready = () => {
+    if (document.body.classList.contains("lock")) return false;
+
+    intro();
+
+    return true;
+  };
+
   if (still) {
     ptr.x = W * 0.5;
     ptr.y = H * 0.3;
+    cv.classList.add("on");
     step(performance.now());
     window.addEventListener("resize", () => {
       build();
       step(performance.now());
     });
     return;
+  }
+
+  if (!ready()) {
+    const mo = new MutationObserver(() => {
+      if (ready()) mo.disconnect();
+    });
+
+    mo.observe(document.body, { attributes: true, attributeFilter: ["class"] });
   }
 
   window.addEventListener(
@@ -1314,12 +1547,12 @@
 
       if (e.clientY < r.top || e.clientY > r.bottom) return;
 
-      ripples.push({
-        x: e.clientX - r.left,
-        y: e.clientY - r.top,
-        t0: performance.now() / 1000,
-      });
-      if (ripples.length > 4) ripples.shift();
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+
+      ripples.push({ x, y, t0: performance.now() / 1000 });
+      if (ripples.length > 5) ripples.shift();
+      burst(x, y, 6, 320);
     },
     { passive: true },
   );

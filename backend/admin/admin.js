@@ -1,5 +1,32 @@
 "use strict";
 (() => {
+  try {
+    const m = localStorage.getItem("theme");
+
+    if (m === "light" || m === "dark")
+      document.documentElement.dataset.mode = m;
+  } catch (e) {}
+
+  addEventListener(
+    "pointermove",
+    (e) => {
+      const r = document.documentElement.style;
+
+      r.setProperty("--x", e.clientX + "px");
+      r.setProperty("--y", e.clientY + "px");
+
+      const c = e.target.closest && e.target.closest(".card,.stat,.m");
+
+      if (c) {
+        const b = c.getBoundingClientRect();
+
+        c.style.setProperty("--mx", e.clientX - b.left + "px");
+        c.style.setProperty("--my", e.clientY - b.top + "px");
+      }
+    },
+    { passive: true },
+  );
+
   const $ = (s, r = document) => r.querySelector(s);
 
   const h = (tag, props, ...kids) => {
@@ -458,7 +485,12 @@
       h(
         "aside",
         { class: "side" },
-        h("div", { class: "brand", text: "portfolio / admin" }),
+        h(
+          "div",
+          { class: "brand" },
+          h("span", { class: "dot" }),
+          h("span", null, "portfolio ", h("em", { text: "/ admin" })),
+        ),
         nav,
         h(
           "div",
